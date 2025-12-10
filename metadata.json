@@ -1,0 +1,5 @@
+{
+  "name": "Grain Bin Job Estimator",
+  "description": "An application to track man-hours for grain bin construction jobs and use AI to predict future job estimates based on historical data.",
+  "requestFramePermissions": []
+}
