@@ -1,0 +1,97 @@
+Customer,Drive_hrs,Build,BinManufacturer,Diameter,Rings,Bushels_k,Hours,Guys,Sidedraw,Stirator,TopDry,DaySweep,HopperBin,year
+King,1.5,New,Brock,24,9,9.735402701,178.5,5,No,No,No,No,No,2025
+Meester,0.5,New,Brock,54,18,98.57095235,544.83,7,No,No,No,No,No,2025
+Meester,0.5,Extension,Westeel,30,2,3.38034816,154,6,No,No,No,No,No,2025
+Dunham,2.5,Old,Westeel,27,7,9.583287034,157.25,6,No,No,No,No,No,2025
+Reynolds,2,New,Brock,18,7,4.259238682,146.75,7,No,No,No,No,Yes,2025
+Master,0.25,New,Brock,18,9,5.476164019,139.25,7,No,No,No,No,Yes,2025
+Harrison,3,New,Brock,30,7,11.83121856,235.75,8,No,Yes,No,No,No,2025
+Master,0.25,New,Brock,30,11,18.59191488,520.26,11,No,No,Yes,No,No,2025
+Coates,1,New,Brock,30,18,30.42313344,352,6,Yes,No,No,No,No,2025
+RHS,0.25,New,Brock,30,18,30.42313344,211.25,6,No,No,No,No,No,2025
+Greydanus,1.25,New,Brock,30,20,33.8034816,292.58,7,No,No,No,No,No,2025
+Langford,,New,Brock,33,15,30.67665955,254.5,6,No,No,No,No,No,2025
+Master,0.25,New,Brock,36,19,46.24316283,284.58,8,No,No,No,No,No,2025
+Master,0.25,New,Brock,36,19,46.24316283,324.91,6,Yes,No,No,No,No,2025
+Reynolds,2,New,Brock,36,22,53.54471485,303.5,6,No,No,No,No,No,2025
+Harrison,3,New,Brock,42,9,29.81467077,238,6,No,No,No,No,No,2025
+Reynolds,2,New,Brock,48,21,90.86375854,494.83,7,Yes,No,No,No,No,2025
+Voskamp,,New,Brock,48,21,90.86375854,400,6,No,No,No,No,No,2025
+Tamsma,0.5,New,Brock,48,22,95.19060419,397.25,6,No,No,No,No,No,2025
+Maltheb,0.5,New,Brock,54,26,142.3802645,647,10,Yes,No,No,No,No,2025
+Greydanus,1.25,New,Brock,78,26,297.0649963,1579,15,Yes,No,No,Yes,No,2025
+Drains,1.25,New,Brock,15,4,1.69017408,117.33,4,No,No,No,No,Yes,2025
+Elocroft,1,New,Brock,33,9,18.40599573,179.75,6,No,No,No,No,No,2025
+Lockie,1,Old,Brock,36,0,0,73.75,,No,No,No,No,No,2025
+Voskamp,3,Old,Westeel,42,7,23.18918838,62,,No,No,No,No,No,2025
+Youngfield,0.75,New,Brock,60,30,202.8208896,886.75,10,Yes,No,No,No,No,2024
+Patron_84x20_est,1,New,Westeel,84,20,433.78,1800,6,No,No,No,No,No,2026
+2107 Hopper- Haybay Genetics,2.5,New,Brock,21,7,8.27,174,4,No,No,No,No,Yes,2015
+Hopper-Yorkshire,1,New,Brock,18,9,7.29,114,4,No,No,No,No,Yes,2015
+2107 Hopper-Kamrath,1,New,Brock,21,7,8.27,120,5,No,No,No,No,Yes,2015
+Kamrath Farms,1,New,Brock,27,11,20.97,75,5,No,No,No,No,No,2015
+Kamrath Farms,1,New,Brock,27,11,20.97,75,5,No,No,No,No,No,2015
+Stir Bin-Yorkshire,1,New,Brock,33,7,22.89,150,5,No,Yes,No,No,No,2015
+Yorkshire,1,New,Brock,33,10,30.16,165,5,No,No,No,No,No,2015
+Yorkshire,1,New,Brock,33,10,30.16,165,5,No,No,No,No,No,2015
+1805 Dave Williams,.5,New,Brock,18,5,4.47,40,4,No,No,No,No,No,2015
+3611 Windylea Farms,1,New,Brock,36,11,39.5,166,5,No,No,No,No,No,2015
+Kawartha Ethanol 6018,2,New,Westeel,60,18,189,787,6,Yes,No,No,No,No,2015
+4 X 3617- Charles Rivett — 1 of 4,2,New,Brock,36,17,56.84,274,5,No,No,No,No,No,2015
+4 X 3617- Charles Rivett — 2 of 4,2,New,Brock,36,17,56.84,274,5,No,No,No,No,No,2015
+4 X 3617- Charles Rivett — 3 of 4,2,New,Brock,36,17,56.84,274,5,No,No,No,No,No,2015
+4 X 3617- Charles Rivett — 4 of 4,2,New,Brock,36,17,56.84,274,5,No,No,No,No,No,2015
+4813 Ryan Svendson,.5,New,Brock,48,13,85.58,339,5,No,No,No,No,No,2015
+3608 Scott Honey,1.5,New,Brock,36,8,30.84,181,5,No,No,No,No,No,2016
+2107 Jamie Healy,2,New,Brock,21,7,8.27,71.5,5,No,No,No,No,No,2016
+3007 Stir Bin - Bruce Buttar,1.25,New,Brock,30,7,18.43,120,5,No,Yes,No,No,No,2016
+2711 x 2 for Charles Rivett,2,New,Brock,27,11,20.97,138.5,5,No,No,No,No,No,2016
+2711 x 2 for Charles Rivett,2,New,Brock,27,11,20.97,138.5,5,No,No,No,No,No,2016
+4819 x 2 Charles Rivett,2,New,Brock,48,19,116.58,298,5,No,No,No,No,No,2017
+4819 x 2 Charles Rivett,2,New,Brock,48,19,116.58,298,5,No,No,No,No,No,2017
+x 3 @ DS&B — 1 of 3,1,New,Brock,42,14,67.54,196,5,No,No,No,No,No,2017
+x 3 @ DS&B — 2 of 3,1,New,Brock,42,14,67.54,196,5,No,No,No,No,No,2017
+x 3 @ DS&B — 3 of 3,1,New,Brock,42,14,67.54,196,5,No,No,No,No,No,2017
+4817 Whitefeather Farms,1,New,Brock,48,17,106.24,319,5,No,No,No,No,No,2018
+4212 McFarlane Farms,1.5,New,Brock,42,12,59.65,246,5,No,No,No,No,No,2018
+3012 Suurd Family Farms,.5,New,Brock,30,12,28.41,175,5,No,No,No,No,No,2018
+2407 Ganaraska Farm,1,New,Brock,24,7,11.14,104,5,No,No,No,No,No,2018
+2707 Stir Bin  Ganaraska,1,New,Brock,27,7,14.52,156,5,No,Yes,No,No,No,2018
+2711 Russ Kamrath,1,New,Brock,27,11,20.97,186,5,No,No,No,No,No,2018
+2715 Art Jenninga,1.5,New,Brock,27,15,27.42,187,5,No,No,No,No,No,2018
+4824 Greydafton Farms,1.5,New,Brock,48,24,142.41,516,5,Yes,No,No,No,No,2018
+3013 Prescott Farms,1,New,Brock,30,13,30.41,150,5,No,No,No,No,No,2018
+3617 Boadway Farms,1.5,New,Brock,36,17,56.84,223,5,No,No,No,No,No,2019
+3617 Boadway Farms,1.5,New,Brock,36,17,56.84,326.5,5,No,No,No,No,No,2019
+4824 Greydafton Farms,1.5,New,Brock,48,24,142.41,592,5,Yes,No,No,No,No,2019
+6030 Youngfield Farms,1,New,Brock,60,30,279.12,980,7,Yes,No,No,No,No,2019
+4812 WC New McLaren,4,New,Westeel,48,12,83.43,450,5,No,No,No,No,No,2019
+4814 Wager Farms,2,New,Brock,48,14,90.75,304,5,No,No,No,No,No,2019
+3010 Morris Stapleton,1,New,Brock,30,10,24.42,112.5,5,No,No,No,No,No,2019
+4209 Scott Swain,1,New,Brock,42,9,47.82,201.5,5,No,No,No,No,No,2019
+5418 Eric Meester,1,New,Brock,54,18,144.2,390,5,No,No,No,No,No,2019
+4212 Bins- Hunco Farms,1,New,Westeel,42,12,61.95,275,5,No,No,No,No,No,2021
+4212 Bins- Hunco Farms,1,New,Westeel,42,12,61.95,275,5,No,No,No,No,No,2021
+3019 Bin- Jordan Coates,1.5,New,Brock,30,19,42.39,230,5,No,No,No,No,No,2022
+4824 Greydafton Farms,1,New,Brock,48,24,142.41,600,5,No,No,No,No,No,2022
+2405 Stirator - Greg Linton,1,New,Brock,24,5,8.61,150,5,No,Yes,No,No,No,2022
+2410 Top-Dry Dan King,2,New,Westeel,24,10,15.57,240,6,No,No,Yes,No,No,2022
+2706 Don Rickard,1,New,Brock,27,6,12.91,101,5,No,No,No,No,No,2022
+3610 Westeel Dan King,2,New,Westeel,36,10,38.02,242,5,No,No,No,No,No,2022
+2408 Westeel - Don Langford,1.5,New,Westeel,24,8,12.91,88,5,No,No,No,No,No,2022
+2708 Stir Bin- Jamie Healy,2,New,Brock,27,8,16.13,146,5,No,Yes,No,No,No,2022
+4220 Nyolane Farms,2.5,New,Brock,42,20,91.22,440,7,Yes,No,No,No,No,2022
+4215 Dan King,2,New,Brock,42,15,71.49,288,6,No,No,No,No,No,2023
+4211 Brookridge Farms,2.5,New,Brock,42,11,55.71,321,6,No,No,No,No,No,2023
+4213 Vanderzaag Farms,2,New,Brock,42,13,63.6,266,6,No,No,No,No,No,2023
+7225 Greydafton Farms,1.5,New,Brock,72,25,354.84,1187,8,Yes,No,No,Yes,No,2023
+King Enterprises,1.5,New,Brock,36,17,56.84,246,6,No,No,No,No,No,2023
+1809 Hopper Bin- Langman,2.5,New,Brock,18,9,7.29,130,5,No,No,No,No,Yes,2024
+Lenberg Farms,1,New,Brock,42,12,59.65,273,6,No,No,No,No,No,2024
+4213 Vanderzaag Farms,2,New,Brock,42,13,63.6,315,6,No,No,No,No,No,2024
+4826 Steve Selby,1,New,Brock,48,26,152.74,597,6,Yes,No,No,No,No,2024
+Mel Thomas,1,New,Brock,42,9,47.82,274,6,No,No,No,No,No,2024
+Chris Hoskins,1,New,Brock,42,20,91.22,485,6,Yes,No,No,No,No,2024
+Haass Acres,1,New,Brock,36,17,56.84,324,6,No,No,No,No,No,2024
+Sam Drury,2,New,Brock,36,21,68.39,442.5,6,Yes,No,No,No,No,2024
+Ross Draper,1,New,Westeel,45,12,72.23,469,6,No,No,No,No,No,2024

@@ -1,9 +1,14 @@
 {
   "name": "bindata",
   "version": "1.0.0",
-  "description": "",
+  "description": "Timesheet/bin pipeline + ridge bin-hours model training",
   "main": "index.js",
   "scripts": {
+    "merge-training": "node model/merge_bin_training_csv.mjs",
+    "train": "node model/train_model.mjs",
+    "eval": "node model/eval_model.mjs",
+    "eval-future": "node model/eval_future_jobs.mjs",
+    "schedule": "node model/predict_schedule.mjs",
     "process": "node process-timesheets.js",
     "fix-sheet1": "node fix-sheet1-blanks.js",
     "count-blanks": "node count-blanks.js",
@@ -19,6 +24,7 @@
     "attach-invoice-desc": "node attach-invoice-descriptions.js",
     "enrich-bin-jobs": "node enrich-bin-jobs-csv.js",
     "verify-bin": "node tools/verify-bin-extraction-report.js",
+    "clean-manhour-old": "node tools/clean-manhourdata-old.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

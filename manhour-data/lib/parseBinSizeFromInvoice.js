@@ -95,6 +95,14 @@ function parseBinSize(canonicalJobId, invoiceDescription) {
       if (p) return { ...p, source: "text_4digit_before_nc" };
     }
 
+    /** "4214NC x 3", "1809NC Hopper" — digits immediately before NC */
+    m = desc.match(/\b(\d{4})NC\b/i);
+    if (m) {
+      const code = parseInt(m[1], 10);
+      const p = parseFromFourDigitNumber(code);
+      if (p) return { ...p, source: "text_4digit_nc_suffix" };
+    }
+
     /** "6030 Bin" / " 6030 " */
     m = desc.match(/\b(\d{4})\s+Bin\b/i);
     if (m) {

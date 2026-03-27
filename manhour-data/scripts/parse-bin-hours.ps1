@@ -1,6 +1,26 @@
 # Parse 2025 Bin Hours (sheet1) from xlsx without Excel COM
+# Usage: .\parse-bin-hours.ps1 [path\to\2025 Man Hour Data.xlsx] [output.csv]
+# Defaults: manhour-data/2025 Man Hour Data - 2025 Bin Hours.xlsx -> data/bin_hours_2025_parsed.csv
+param(
+    [string]$XlsxPath = "",
+    [string]$OutCsv = ""
+)
+$here = $PSScriptRoot
+$manhourData = Split-Path $here -Parent
+if (-not $XlsxPath) {
+    $XlsxPath = Join-Path $manhourData "2025 Man Hour Data.xlsx"
+}
+if (-not $OutCsv) {
+    $dataDir = Join-Path $manhourData "data"
+    if (-not (Test-Path $dataDir)) { New-Item -ItemType Directory -Force -Path $dataDir | Out-Null }
+    $OutCsv = Join-Path $dataDir "bin_hours_2025_parsed.csv"
+}
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-$path = 'c:\Users\Roy\Documents\ManhourData\2025 Man Hour Data.xlsx'
+$path = $XlsxPath
+if (-not (Test-Path $path)) {
+    Write-Error "Workbook not found: $path`nPass path as first argument or place 2025 Man Hour Data.xlsx in manhour-data/"
+    exit 1
+}
 $zip = [System.IO.Compression.ZipFile]::OpenRead($path)
 
 # Shared strings
@@ -90,8 +110,9 @@ for ($r = 2; $r -le $maxRow; $r++) {
     $records += [pscustomobject]$h
 }
 
-$records | Export-Csv -Path 'c:\Users\Roy\Documents\ManhourData\bin_hours_parsed.csv' -NoTypeInformation -Encoding UTF8
+$records | Export-Csv -Path $OutCsv -NoTypeInformation -Encoding UTF8
 
+Write-Host "Wrote $OutCsv"
 Write-Host "Rows parsed (data rows): $($records.Count)"
 Write-Host "Max sheet row index: $maxRow"
 $records | Select-Object -First 3 | Format-List
