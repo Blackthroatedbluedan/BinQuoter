@@ -1,0 +1,106 @@
+ANALYSIS PIPELINE HANDOFF — Timesheet BinData (Sheet1 → CSV → trust flags)
+============================================================================
+
+GOAL
+----
+Turn messy Excel timesheets (Sheet1 daily hours by person) into clean, analysis-ready
+CSVs per calendar year, with:
+  • Canonical job IDs and total hours aligned across employees
+  • A “trusted” flag on real jobs when enough distinct people logged time (crew coverage
+    suggests hours are largely complete)
+  • Unallocated / unknown job text kept separate — never marked “trusted”
+
+Downstream: feed these CSVs into a larger analysis model (costing, job profitability,
+crew utilization, etc.).
+
+--------------------------------------------------------------------------------
+HIGH-LEVEL FLOW (run: npm run assemble)
+--------------------------------------------------------------------------------
+1. add-missing-sheet2.js
+   Adds Sheet2 rollup sheet where missing (formulas on Sheet1 column C).
+
+2. fix-sheet1-blanks.js
+   Building season only: fill Job# + Customer from Joel/Brad same day when both blank.
+
+3. fix-sheet1-partial-crossfill.js
+   Same-day cross-fill from other employees; aliases/typos; mirrors; exclusions
+   (Pete from unresolved report, Shop/OFF/ST, Ontario stat dates, job-only and
+   customer-only rows as acceptable for that report).
+
+4. sync-sheet1-rollup-key.js
+   Copies Customer → Job# when Job# was empty so Excel Sheet2 (which only reads
+   column C) can sum those hours.
+
+5. process-timesheets.js
+   Rebuilds output/year_YYYY/:
+     • sheet1_daily_lines.csv — one row per person/day line with job_raw, hours
+     • sheet1_totals_by_job.csv — hours per canonical_job_id (Sheet1 logic, imputed)
+     • sheet2_totals_by_job.csv — from Excel Sheet2 (if present)
+     • audit_sheet2_vs_sheet1_by_employee_job.csv — reconciliation
+
+6. job-trust-by-contributors.js
+   After (5), reads daily lines + official totals to produce:
+     • year_YYYY/sheet1_jobs_with_trust.csv  ← PRIMARY HANDOFF FOR JOBS + TRUST
+     • year_YYYY/jobs_trusted_5plus_contributors.csv — contributor detail
+
+7. audit-workbook-sheets.js, count-blanks.js — inventory and blank metrics.
+
+Also: output/assembled_sheet1_daily_all_years.csv and remainder_for_review.csv
+
+--------------------------------------------------------------------------------
+KEY OUTPUT: sheet1_jobs_with_trust.csv (per year)
+--------------------------------------------------------------------------------
+Location: output/year_2023/sheet1_jobs_with_trust.csv
+          output/year_2024/sheet1_jobs_with_trust.csv
+
+Columns:
+  canonical_job_id   — Normalized ID (numeric jobs joined with underscores; text
+                         jobs as TEXT_…; __UNALLOCATED__ for N/A / blank / ?)
+  total_hours_sheet1 — Same totals as sheet1_totals_by_job.csv (authoritative hours)
+  contributor_count  — Distinct employee names who logged at least one line
+                         allocating hours to this job (split jobs like 6605/6657
+                         divide hours across IDs)
+  contributors_semicolon_separated — Who contributed
+  trusted            — "yes" or "no"
+
+Rules for trusted:
+  • "yes" only if contributor_count >= 5 (default; MIN_CONTRIBUTORS env) AND
+    canonical_job_id is NOT __UNALLOCATED__.
+  • __UNALLOCATED__ always has trusted = "no" (tracked separately; it is not a job).
+
+Rationale: ~5 people on crew → if five or more distinct people have hours on a real
+job, coverage is likely strong. This is a heuristic, not a guarantee.
+
+--------------------------------------------------------------------------------
+OTHER USEFUL FILES
+--------------------------------------------------------------------------------
+  sheet1_daily_lines.csv     — Line-level grain for modeling
+  sheet1_totals_by_job.csv   — Hours only (no trust column)
+  assembled_sheet1_daily_all_years.csv — All years in one file
+  remainder_for_review.csv   — Rows still worth eyeballing (blanks, odd text)
+
+  guess_bin_sizes_trusted_jobs.csv (optional “for fun” heuristic)
+    Run: npm run guess-bins
+    After trust CSVs exist, maps each trusted job’s total Sheet1 hours to guessed
+    diameter / rings / bushels using 2025 Man Hour Data - 2025 Bin Hours.csv as a
+    calibration curve (interpolate or extrapolate). See output/guess_bin_sizes_README.txt.
+
+--------------------------------------------------------------------------------
+SHEET1 TOTAL HOURS COLUMN (G/H, “Total” / “Total hours”)
+--------------------------------------------------------------------------------
+  Excel often stores duration as a fraction of a day (10 h ≈ 0.4167). The pipeline
+  now reads the raw cell so those values convert to hours (×24). Formatted times
+  like 10:00:00 and text like “10 hours 30 mins” are parsed as well. Re-run
+  npm run process after updating process-timesheets.js so rollups reflect fixes.
+
+--------------------------------------------------------------------------------
+REGENERATION
+--------------------------------------------------------------------------------
+  npm run assemble
+  or after changing timesheets only:
+  npm run process && npm run job-trust
+
+--------------------------------------------------------------------------------
+DEPENDENCIES
+--------------------------------------------------------------------------------
+  Node.js, npm package "xlsx". All scripts live under c:\BinData (or repo root).

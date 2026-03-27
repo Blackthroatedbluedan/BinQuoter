@@ -1,0 +1,31 @@
+{
+  "name": "bindata",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "process": "node process-timesheets.js",
+    "fix-sheet1": "node fix-sheet1-blanks.js",
+    "count-blanks": "node count-blanks.js",
+    "fix-partial-crossfill": "node fix-sheet1-partial-crossfill.js",
+    "fix-all": "node fix-all-timesheets.js",
+    "audit-sheets": "node audit-workbook-sheets.js",
+    "add-sheet2": "node add-missing-sheet2.js",
+    "sync-sheet1-rollup": "node sync-sheet1-rollup-key.js",
+    "assemble": "node assemble-all.js",
+    "job-trust": "node job-trust-by-contributors.js",
+    "guess-bins": "node guess-bin-sizes.js",
+    "merge-jobs-trust": "node merge-jobs-with-trust.js",
+    "attach-invoice-desc": "node attach-invoice-descriptions.js",
+    "enrich-bin-jobs": "node enrich-bin-jobs-csv.js",
+    "verify-bin": "node tools/verify-bin-extraction-report.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

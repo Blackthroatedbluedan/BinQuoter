@@ -1,0 +1,9 @@
+node_modules/
+output/*
+!output/.gitkeep
+*.xlsx
+~$*
+backup_before_*/
+*.bak
+*.bak2
+.DS_Store
