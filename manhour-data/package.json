@@ -19,6 +19,7 @@
     "attach-invoice-desc": "node attach-invoice-descriptions.js",
     "enrich-bin-jobs": "node enrich-bin-jobs-csv.js",
     "verify-bin": "node tools/verify-bin-extraction-report.js",
+    "clean-manhour-old": "node tools/clean-manhourdata-old.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

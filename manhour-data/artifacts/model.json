@@ -1,0 +1,53 @@
+{
+  "version": 3,
+  "trainedAt": "2026-03-27T20:33:39.584Z",
+  "trainingRows": 92,
+  "scope": "New_build_only",
+  "yearFilter": null,
+  "ridgeLambda": 0.1,
+  "looRmseHours": 75.961668401228,
+  "trainRmseHours": 48.16544335080341,
+  "featureNames": [
+    "intercept",
+    "Drive_hrs",
+    "Diameter",
+    "Rings",
+    "Rings_per_Diameter",
+    "Diameter_sq_div_1000",
+    "D_times_R_div_1000",
+    "max0_D_minus_60_div_10",
+    "log1p_Bushels_k",
+    "Guys",
+    "Guys_per_sqrt_DxR",
+    "Sidedraw",
+    "Stirator",
+    "TopDry",
+    "DaySweep",
+    "HopperBin",
+    "Mfg_Westeel"
+  ],
+  "beta": [
+    -19.616595962877852,
+    8.056672708496947,
+    -9.661874143371627,
+    9.971297089358782,
+    -42.51073096432759,
+    223.67264469953386,
+    60.0018806418114,
+    220.50088982883244,
+    5.995396141229094,
+    14.937656647828717,
+    131.09702403787455,
+    94.45344172489014,
+    37.67436190851441,
+    136.31551427130466,
+    -156.66638642885613,
+    30.94365477528953,
+    57.864039807074505
+  ],
+  "defaults": {
+    "millwright_hours": 60,
+    "concrete_hours": 130
+  },
+  "notes": "v3: +Diameter_sq/1000 + D*R/1000 for superlinear large-bin labor. New-build ridge only. Re-run npm run train after updating bin_hours_parsed.csv."
+}
