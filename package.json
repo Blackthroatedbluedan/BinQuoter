@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "manhour:merge": "npm --prefix manhour-data run merge-training",
+    "manhour:train": "npm --prefix manhour-data run train",
+    "manhour:eval": "npm --prefix manhour-data run eval"
   },
   "dependencies": {
     "recharts": "^3.4.1",

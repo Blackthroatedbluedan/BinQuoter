@@ -21,9 +21,10 @@ View your app in AI Studio: https://ai.studio/apps/drive/1QnLWJ2YpLE7FD38dVq64oU
 
 ## Man-hour / bin data pipeline
 
-The **`manhour-data/`** folder contains the Node.js pipeline (timesheets → cleaned job CSV → invoice attach → bin size enrichment). It complements the grain bin quoter UI above.
+The **`manhour-data/`** folder contains the Node.js pipeline (timesheets → cleaned job CSV → invoice attach → bin size enrichment) and the **ridge bin-hours model** source + training data.
 
-- **Docs:** [manhour-data/README.md](manhour-data/README.md)
-- **Typical flow:** `cd manhour-data && npm install && npm run assemble` (place timesheet `.xlsx` files in that folder first).
+- **Docs:** [manhour-data/README.md](manhour-data/README.md) · [docs/MANHOUR_MODEL.md](manhour-data/docs/MANHOUR_MODEL.md)
+- **Retrain model after clone:** `cd manhour-data && npm install && npm run merge-training && npm run train` (writes `artifacts/model.json`).
+- **From repo root:** `npm run manhour:train` (after `npm install` in `manhour-data/` once).
 
-Generated CSVs and `node_modules` under `manhour-data/` are gitignored; commit the scripts and calibration CSV only.
+Timesheet **outputs** under `manhour-data/output/` stay gitignored; **training CSVs** in `manhour-data/data/`, merged `bin_hours_parsed.csv`, and `model/` are committed so clones can reproduce the model.

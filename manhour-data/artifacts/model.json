@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "trainedAt": "2026-03-27T20:33:39.584Z",
+  "trainedAt": "2026-03-27T20:49:11.672Z",
   "trainingRows": 92,
   "scope": "New_build_only",
   "yearFilter": null,
@@ -49,5 +49,5 @@
     "millwright_hours": 60,
     "concrete_hours": 130
   },
-  "notes": "v3: +Diameter_sq/1000 + D*R/1000 for superlinear large-bin labor. New-build ridge only. Re-run npm run train after updating bin_hours_parsed.csv."
+  "notes": "v3: +Diameter_sq/1000 + D*R/1000 + max(0,D-60)/10. Optional: anchor rare mega-bins in data/bin_hours_2025_parsed.csv (e.g. Patron 84x20). Re-run merge-training then train after CSV edits."
 }
