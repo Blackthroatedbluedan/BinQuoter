@@ -6,6 +6,7 @@
   "scripts": {
     "merge-training": "node model/merge_bin_training_csv.mjs",
     "train": "node model/train_model.mjs",
+    "predict": "node model/predict_bin.mjs",
     "eval": "node model/eval_model.mjs",
     "eval-future": "node model/eval_future_jobs.mjs",
     "schedule": "node model/predict_schedule.mjs",
