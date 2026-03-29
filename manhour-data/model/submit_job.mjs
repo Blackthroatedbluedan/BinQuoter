@@ -11,6 +11,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 import { loadModel, predictBinJobHours } from "./bin_hours_api.mjs";
 import {
   loadBinTrainingRecords,
@@ -47,6 +48,7 @@ Optional:
   --hopperbin        Enable HopperBin flag
   --neighbors N      Number of similar historical jobs to show (default: 3)
   --dry-run          Evaluate only — do not append to training CSV
+  --retrain          Retrain the model after appending (runs npm run train)
   --model PATH       Path to model.json
   --csv PATH         Path to training CSV
   --help             Show this message
@@ -71,6 +73,7 @@ function parseArgs(argv) {
     hopperBin: false,
     neighbors: 3,
     dryRun: false,
+    retrain: false,
     model: path.join(ROOT, "artifacts", "model.json"),
     csv: path.join(ROOT, "bin_hours_parsed.csv"),
   };
@@ -94,6 +97,7 @@ function parseArgs(argv) {
     else if (a === "--hopperbin") o.hopperBin = true;
     else if (a === "--neighbors") o.neighbors = Number(argv[++i]);
     else if (a === "--dry-run") o.dryRun = true;
+    else if (a === "--retrain") o.retrain = true;
     else if (a === "--model") o.model = argv[++i];
     else if (a === "--csv") o.csv = argv[++i];
     else { console.error(`Unknown arg: ${a}`); process.exit(1); }
@@ -335,7 +339,19 @@ function main() {
   console.log(`  ✓ Logged to ${path.relative(ROOT, logPath)}`);
   console.log(`    Row: ${line}`);
   console.log();
-  console.log("  Note: run 'npm run train' to retrain the model with this new data.");
+  if (args.retrain) {
+    console.log("  Retraining model...");
+    console.log();
+    try {
+      execSync("node model/train_model.mjs", { cwd: ROOT, stdio: "inherit" });
+      console.log();
+      console.log("  ✓ Model retrained with new data.");
+    } catch (e) {
+      console.error("  ✗ Retrain failed:", e.message);
+    }
+  } else {
+    console.log("  Note: run 'npm run train' (or use --retrain) to retrain the model with this new data.");
+  }
   console.log();
 }
 
