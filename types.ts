@@ -68,13 +68,16 @@ export interface QuoteParams {
     hopperBin: boolean;
     machineRental: boolean;
     manufacturer: string;
+    targetMargin: number;
+    safetyBuffer: number;
 }
 
 export interface QuoteResult {
+    rawPredictedHours: number;
     predictedHours: number;
     buildDays: number;
     bushelsK: number;
-    laborRevenue: number;
+    billingRate: number;
     hotelCost: number;
     dieselCost: number;
     machineCost: number;

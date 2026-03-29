@@ -24,18 +24,19 @@ const ROOT = path.join(__dirname, "..");
 const FLAG_NAMES = ["Sidedraw", "Stirator", "TopDry", "DaySweep", "HopperBin"];
 
 // ── Cost defaults ──
-const BILLING_RATE = 60;         // $/hr charged to customer, per crew member
-const LABOURER_WAGE = 24;        // $/hr internal cost
-const FOREMAN_WAGE = 40;         // $/hr internal cost
+const LABOURER_WAGE = 24;
+const FOREMAN_WAGE = 40;
 const DEFAULT_LABOURERS = 5;
 const DEFAULT_FOREMEN = 1;
-const HOTEL_RATE = 160;          // $/room/night
+const HOTEL_RATE = 160;
 const HOTEL_PPL_PER_ROOM = 2;
-const HOTEL_DRIVE_THRESHOLD = 1.5; // hrs — stay at hotel if drive > this
-const DIESEL_RATE_PER_KM = 0.55;  // $/km (crew truck + trailer)
-const AVG_SPEED_KMH = 80;         // average highway speed
+const HOTEL_DRIVE_THRESHOLD = 1.5;
+const DIESEL_RATE_PER_KM = 0.55;
+const AVG_SPEED_KMH = 80;
 const MACHINE_RENTAL_PER_DAY = 250;
-const WORK_HOURS_PER_DAY = 10;    // effective build hours per day
+const WORK_HOURS_PER_DAY = 10;
+const DEFAULT_TARGET_MARGIN = 35;  // %
+const DEFAULT_SAFETY_BUFFER = 10;  // %
 
 function parseArgs(argv) {
   const o = {
@@ -52,7 +53,8 @@ function parseArgs(argv) {
     topDry: false,
     daySweep: false,
     hopperBin: false,
-    billingRate: BILLING_RATE,
+    targetMargin: DEFAULT_TARGET_MARGIN,
+    safetyBuffer: DEFAULT_SAFETY_BUFFER,
     dieselRate: DIESEL_RATE_PER_KM,
     hotelRate: HOTEL_RATE,
     machine: false,
@@ -79,7 +81,8 @@ function parseArgs(argv) {
     else if (a === "--topdry") o.topDry = true;
     else if (a === "--daysweep") o.daySweep = true;
     else if (a === "--hopperbin") o.hopperBin = true;
-    else if (a === "--rate") o.billingRate = Number(argv[++i]);
+    else if (a === "--margin") o.targetMargin = Number(argv[++i]);
+    else if (a === "--safety") o.safetyBuffer = Number(argv[++i]);
     else if (a === "--diesel-rate") o.dieselRate = Number(argv[++i]);
     else if (a === "--hotel-rate") o.hotelRate = Number(argv[++i]);
     else if (a === "--machine") o.machine = true;
@@ -107,8 +110,11 @@ Crew:
   --guys N           Total crew size (shortcut: sets labourers = guys - foremen)
   --drive N          One-way drive hours to site (default: 1)
 
+Pricing:
+  --margin N         Target gross margin % (default: ${DEFAULT_TARGET_MARGIN})
+  --safety N         Safety buffer % added to predicted hours (default: ${DEFAULT_SAFETY_BUFFER})
+
 Costs:
-  --rate N           Billing rate $/hr per crew member (default: ${BILLING_RATE})
   --diesel-rate N    Diesel cost $/km (default: ${DIESEL_RATE_PER_KM})
   --hotel-rate N     Hotel $/room/night (default: ${HOTEL_RATE})
   --machine          Include machine/crane rental
@@ -178,13 +184,14 @@ function main() {
   };
 
   const model = loadModel(args.model);
-  const predicted = predictBinJobHours(model.beta, inputRec);
+  const rawPredicted = predictBinJobHours(model.beta, inputRec);
 
-  // ── Build days estimate ──
+  // ── Safety buffer: pad hours to protect against overruns ──
+  const safetyMult = 1 + args.safetyBuffer / 100;
+  const predicted = rawPredicted * safetyMult;
+
+  // ── Build days based on padded hours ──
   const buildDays = Math.ceil(predicted / (crewSize * WORK_HOURS_PER_DAY));
-
-  // ── Labor cost (billing to customer) ──
-  const laborRevenue = predicted * args.billingRate;
 
   // ── Internal crew cost ──
   const internalCostPerHour = (args.labourers * LABOURER_WAGE) + (args.foremen * FOREMAN_WAGE);
@@ -206,17 +213,20 @@ function main() {
   // ── Machine rental ──
   const machineCost = args.machine ? buildDays * args.machineRate : 0;
 
-  // ── Drive time labor (crew gets paid while driving) ──
+  // ── Drive time labor ──
   const driveTrips = needsHotel ? 2 : buildDays * 2;
   const totalDriveHours = driveTrips * args.drive;
   const driveLaborCost = totalDriveHours * internalCostPerHour;
 
-  // ── Totals ──
-  // $60/hr is the all-in billing rate — hotel, diesel, machine come out of that, not added on top
-  const totalRevenue = laborRevenue;
+  // ── Total expenses ──
   const totalExpenses = internalLabor + driveLaborCost + hotelCost + dieselCost + machineCost;
+
+  // ── Target margin pricing: rate = expenses / (paddedHrs × (1 - margin%)) ──
+  const targetMarginFrac = args.targetMargin / 100;
+  const totalRevenue = totalExpenses / (1 - targetMarginFrac);
+  const billingRate = predicted > 0 ? totalRevenue / predicted : 0;
   const grossMargin = totalRevenue - totalExpenses;
-  const marginPct = totalRevenue > 0 ? (grossMargin / totalRevenue) * 100 : 0;
+  const marginPct = args.targetMargin;
 
   // ── Neighbors ──
   const records = loadBinTrainingRecords(args.csv, {
@@ -258,21 +268,22 @@ function main() {
   lines.push(`  Labourers:     ${args.labourers}  × $${LABOURER_WAGE}/hr`);
   lines.push(`  Foremen:       ${args.foremen}  × $${FOREMAN_WAGE}/hr`);
   lines.push(`  Total crew:    ${crewSize}`);
-  lines.push(`  Billing rate:  ${fmtMoney(args.billingRate)}/hr per person`);
   lines.push(`  Drive (1-way): ${args.drive} hrs  (${oneWayKm.toFixed(0)} km)`);
   lines.push(`  Hotel needed:  ${needsHotel ? "Yes (drive > 1.5 hrs)" : "No"}`);
   lines.push("");
 
   lines.push("  BUILD ESTIMATE");
   lines.push("  " + rule.slice(2));
-  lines.push(`  Predicted man-hours:  ${pad(predicted.toFixed(1), 8)} hrs`);
+  lines.push(`  Model prediction:    ${pad(rawPredicted.toFixed(1), 8)} hrs`);
+  lines.push(`  Safety buffer:       ${pad("+" + args.safetyBuffer + "%", 8)}     (+${(predicted - rawPredicted).toFixed(0)} hrs)`);
+  lines.push(`  Quoted hours:        ${pad(predicted.toFixed(1), 8)} hrs`);
   lines.push(`  Estimated build days: ${pad(buildDays, 8)} days`);
   lines.push("");
 
   lines.push("  CUSTOMER QUOTE");
   lines.push("  " + rule.slice(2));
-  lines.push(`  ${predicted.toFixed(0)} man-hrs × $${args.billingRate}/hr per person`);
-  lines.push(`  (all-in rate — includes fuel, hotel, equipment)`);
+  lines.push(`  ${predicted.toFixed(0)} man-hrs × ${fmtMoney(billingRate)}/hr per person`);
+  lines.push(`  (rate set to achieve ${args.targetMargin}% margin — all-in, includes fuel, hotel, equipment)`);
   lines.push("");
   lines.push(`  TOTAL QUOTE:                               ${pad(fmtMoney(totalRevenue), 12)}`);
   lines.push("");

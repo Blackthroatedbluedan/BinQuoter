@@ -23,6 +23,8 @@ const JobQuote: React.FC<JobQuoteProps> = ({ jobs }) => {
     hopperBin: false,
     machineRental: false,
     manufacturer: 'Brock',
+    targetMargin: 35,
+    safetyBuffer: 10,
   });
   const [quote, setQuote] = useState<QuoteResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +63,11 @@ const JobQuote: React.FC<JobQuoteProps> = ({ jobs }) => {
   const crewFields = [
     { name: 'labourers', label: 'Labourers ($24/hr)' },
     { name: 'foremen', label: 'Foremen ($40/hr)' },
+  ];
+
+  const pricingFields = [
+    { name: 'targetMargin', label: 'Target Margin %' },
+    { name: 'safetyBuffer', label: 'Safety Buffer %' },
   ];
 
   const checkboxFields = [
@@ -122,6 +129,24 @@ const JobQuote: React.FC<JobQuoteProps> = ({ jobs }) => {
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          {pricingFields.map(field => (
+            <div key={field.name}>
+              <label htmlFor={`quote-${field.name}`} className="block text-sm font-medium text-slate-600">{field.label}</label>
+              <input
+                type="number"
+                name={field.name}
+                id={`quote-${field.name}`}
+                value={params[field.name as keyof typeof params] as number}
+                onChange={handleChange}
+                min={0}
+                max={100}
+                className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+          ))}
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-slate-600">Options</label>
           <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -141,7 +166,7 @@ const JobQuote: React.FC<JobQuoteProps> = ({ jobs }) => {
         </div>
 
         <div className="text-xs text-slate-500">
-          Crew: {crewSize} total ({params.labourers} labourers + {params.foremen} foreman) • Billing rate: $60/hr per person • Hotel: {params.driveHours > 1.5 ? 'Yes' : 'No'} (triggered at &gt;1.5 hr drive)
+          Crew: {crewSize} total ({params.labourers} labourers + {params.foremen} foreman) • Target margin: {params.targetMargin}% • Safety: +{params.safetyBuffer}% • Hotel: {params.driveHours > 1.5 ? 'Yes' : 'No'} (&gt;1.5 hr)
         </div>
 
         <button onClick={handleQuote} className="w-full bg-slate-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition duration-150 ease-in-out">
@@ -153,20 +178,24 @@ const JobQuote: React.FC<JobQuoteProps> = ({ jobs }) => {
 
       {quote && (
         <div className="mt-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4 text-center">
+          <div className="grid grid-cols-3 gap-3 text-center">
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <p className="text-2xl font-bold text-slate-800">{quote.predictedHours.toFixed(0)}</p>
-              <p className="text-xs text-slate-500">Predicted Man Hours</p>
+              <p className="text-xl font-bold text-slate-800">{quote.rawPredictedHours.toFixed(0)}</p>
+              <p className="text-xs text-slate-500">Model Hours</p>
+            </div>
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-xl font-bold text-blue-700">{quote.predictedHours.toFixed(0)}</p>
+              <p className="text-xs text-slate-500">Quoted Hours (+{params.safetyBuffer}%)</p>
             </div>
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <p className="text-2xl font-bold text-slate-800">{quote.buildDays}</p>
+              <p className="text-xl font-bold text-slate-800">{quote.buildDays}</p>
               <p className="text-xs text-slate-500">Build Days</p>
             </div>
           </div>
 
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <h3 className="font-semibold text-slate-800 mb-2">Customer Quote</h3>
-            <p className="text-xs text-slate-500 mb-3">{quote.predictedHours.toFixed(0)} man-hrs × $60/hr per person (all-in rate — includes fuel, hotel, equipment)</p>
+            <p className="text-xs text-slate-500 mb-3">{quote.predictedHours.toFixed(0)} quoted hrs × {fmtMoney(quote.billingRate)}/hr per person (rate set for {params.targetMargin}% margin — all-in, includes fuel, hotel, equipment)</p>
             <div className="flex justify-between items-center">
               <span className="font-semibold text-slate-800">Total Quote</span>
               <span className="text-2xl font-bold text-green-600">{fmtMoney(quote.totalQuote)}</span>

@@ -152,7 +152,6 @@ export function getManHourPrediction(jobs: Job[], params: PredictionParams): Man
 }
 
 // ── Cost constants ──
-const BILLING_RATE = 60;
 const LABOURER_WAGE = 24;
 const FOREMAN_WAGE = 40;
 const HOTEL_RATE = 160;
@@ -174,10 +173,12 @@ export function getJobQuote(jobs: Job[], params: QuoteParams): QuoteResult {
     params.sidedraw, params.stirator, params.topDry, params.daySweep, params.hopperBin,
     params.manufacturer,
   );
-  const predicted = dotProduct(beta, features);
-  const buildDays = Math.ceil(predicted / (crewSize * WORK_HOURS_PER_DAY));
+  const rawPredicted = dotProduct(beta, features);
 
-  const laborRevenue = predicted * BILLING_RATE;
+  const safetyMult = 1 + (params.safetyBuffer ?? 10) / 100;
+  const predicted = rawPredicted * safetyMult;
+
+  const buildDays = Math.ceil(predicted / (crewSize * WORK_HOURS_PER_DAY));
 
   const internalCostPerHour = (params.labourers * LABOURER_WAGE) + (params.foremen * FOREMAN_WAGE);
   const internalLabor = (predicted / crewSize) * internalCostPerHour;
@@ -199,11 +200,13 @@ export function getJobQuote(jobs: Job[], params: QuoteParams): QuoteResult {
   const totalDriveHours = driveTrips * params.driveHours;
   const internalDriveLabor = totalDriveHours * internalCostPerHour;
 
-  // $60/hr is the all-in billing rate — hotel, diesel, machine come out of that, not added on top
-  const totalQuote = laborRevenue;
   const totalInternalCost = internalLabor + internalDriveLabor + hotelCost + dieselCost + machineCost;
+
+  const targetMarginFrac = (params.targetMargin ?? 35) / 100;
+  const totalQuote = totalInternalCost / (1 - targetMarginFrac);
+  const billingRate = predicted > 0 ? totalQuote / predicted : 0;
   const grossMargin = totalQuote - totalInternalCost;
-  const marginPct = totalQuote > 0 ? (grossMargin / totalQuote) * 100 : 0;
+  const marginPct = params.targetMargin ?? 35;
 
   const nearest = findNearestJobs(
     { diameter: params.diameter, rings: params.rings, sidedraw: params.sidedraw, stirator: params.stirator, topDry: params.topDry, daySweep: params.daySweep, hopperBin: params.hopperBin, manufacturer: params.manufacturer },
@@ -214,16 +217,17 @@ export function getJobQuote(jobs: Job[], params: QuoteParams): QuoteResult {
   ).join("; ");
 
   return {
+    rawPredictedHours: Math.round(rawPredicted * 10) / 10,
     predictedHours: Math.round(predicted * 10) / 10,
     buildDays,
     bushelsK,
-    laborRevenue,
+    billingRate: Math.round(billingRate * 100) / 100,
     hotelCost,
     dieselCost,
     machineCost,
     totalQuote,
     internalLabor,
-    internalDriveLabor: internalDriveLabor,
+    internalDriveLabor,
     totalInternalCost,
     grossMargin,
     marginPct,
