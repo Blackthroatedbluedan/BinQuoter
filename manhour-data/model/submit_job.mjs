@@ -154,6 +154,20 @@ function csvEscape(v) {
   return s;
 }
 
+/**
+ * Append a structured entry to artifacts/performance_log.json.
+ * The log is an array of objects — one per submitted job.
+ */
+function appendPerformanceLog(logPath, entry) {
+  let log = [];
+  if (fs.existsSync(logPath)) {
+    try { log = JSON.parse(fs.readFileSync(logPath, "utf8")); } catch { log = []; }
+  }
+  log.push(entry);
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
+  fs.writeFileSync(logPath, JSON.stringify(log, null, 2), "utf8");
+}
+
 function main() {
   const args = parseArgs(process.argv);
 
@@ -272,9 +286,38 @@ function main() {
   });
   console.log();
 
-  // ── Append to training CSV ──
+  // ── Performance log entry ──
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    customer: args.customer,
+    diameter: args.diameter,
+    rings: args.rings,
+    bushelsK: bushels,
+    guys: args.guys,
+    driveHours: args.drive,
+    manufacturer: args.manufacturer,
+    equipment: flags,
+    year: args.year,
+    actualHours: args.hours,
+    modelPredicted: Math.round(predicted * 10) / 10,
+    neighborAvg: Math.round(neighborAvg * 10) / 10,
+    modelError: Math.round(modelErr * 10) / 10,
+    modelErrorPct: Math.round(modelPct * 10) / 10,
+    neighborError: Math.round(neighborErr * 10) / 10,
+    blendedRatio: Math.round(perf.blended * 1000) / 1000,
+    rating: perf.rating,
+    neighbors: nearest.map(n => ({
+      customer: String(n.rec.Customer ?? ""),
+      diameter: num(n.rec.Diameter),
+      rings: num(n.rec.Rings),
+      hours: n.actual,
+      year: String(n.rec.year ?? ""),
+    })),
+  };
+
+  // ── Append to training CSV + log ──
   if (args.dryRun) {
-    console.log("  [dry-run] Skipping CSV append.");
+    console.log("  [dry-run] Skipping CSV append and performance log.");
     console.log();
     return;
   }
@@ -289,7 +332,11 @@ function main() {
 
   fs.appendFileSync(args.csv, "\n" + line, "utf8");
 
+  const logPath = path.join(ROOT, "artifacts", "performance_log.json");
+  appendPerformanceLog(logPath, logEntry);
+
   console.log(`  ✓ Appended to ${path.relative(ROOT, args.csv)}`);
+  console.log(`  ✓ Logged to ${path.relative(ROOT, logPath)}`);
   console.log(`    Row: ${line}`);
   console.log();
   console.log("  Note: run 'npm run train' to retrain the model with this new data.");
