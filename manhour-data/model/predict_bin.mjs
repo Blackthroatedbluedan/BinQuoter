@@ -14,6 +14,7 @@ import {
   num,
   yn,
 } from "./features_bin.mjs";
+import { bushelsCornThousands } from "./bushels_brock.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
@@ -86,17 +87,11 @@ function parseArgs(argv) {
 }
 
 /**
- * Rough bushels estimate when not provided.
- * Cylinder volume ≈ π/4 * D² * (rings * ~32″ per ring) converted to bushels.
- * This is a coarse fallback; pass --bushels for accuracy.
+ * Bushels lookup using manufacturer-specific formula (Brock 42″ / Westeel 44″ rings).
+ * Falls back to --bushels if provided.
  */
-function estimateBushels(diameter, rings) {
-  const ringHeightFt = 32 / 12;
-  const heightFt = rings * ringHeightFt;
-  const radiusFt = diameter / 2;
-  const volumeCuFt = Math.PI * radiusFt * radiusFt * heightFt;
-  const bushelsCuFt = 1.2444;
-  return (volumeCuFt / bushelsCuFt) / 1000;
+function estimateBushels(diameter, rings, manufacturer) {
+  return bushelsCornThousands(diameter, rings, manufacturer);
 }
 
 /**
@@ -142,7 +137,7 @@ function main() {
 
   const bushels = Number.isFinite(args.bushels) && args.bushels > 0
     ? args.bushels
-    : estimateBushels(args.diameter, args.rings);
+    : estimateBushels(args.diameter, args.rings, args.manufacturer);
 
   const inputRec = {
     Drive_hrs: String(args.drive),

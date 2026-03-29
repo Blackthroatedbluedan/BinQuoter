@@ -17,6 +17,7 @@ import {
   num,
   yn,
 } from "./features_bin.mjs";
+import { bushelsCornThousands } from "./bushels_brock.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
@@ -100,13 +101,8 @@ function parseArgs(argv) {
   return o;
 }
 
-function estimateBushels(diameter, rings) {
-  const ringHeightFt = 32 / 12;
-  const heightFt = rings * ringHeightFt;
-  const radiusFt = diameter / 2;
-  const volumeCuFt = Math.PI * radiusFt * radiusFt * heightFt;
-  const bushelsCuFt = 1.2444;
-  return (volumeCuFt / bushelsCuFt) / 1000;
+function estimateBushels(diameter, rings, manufacturer) {
+  return bushelsCornThousands(diameter, rings, manufacturer);
 }
 
 function jobDistance(input, hist) {
@@ -190,7 +186,7 @@ function main() {
 
   const bushels = Number.isFinite(args.bushels) && args.bushels > 0
     ? args.bushels
-    : estimateBushels(args.diameter, args.rings);
+    : estimateBushels(args.diameter, args.rings, args.manufacturer);
 
   const inputRec = {
     Customer: args.customer,
