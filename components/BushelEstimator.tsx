@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Job, BinRecommendation, RecommendationParams } from '../types';
-import { getBinRecommendation } from '../services/geminiService';
+import { getBinRecommendation } from '../services/ridgeModel';
 
 interface BushelEstimatorProps {
   jobs: Job[];
@@ -28,18 +28,15 @@ const BushelEstimator: React.FC<BushelEstimatorProps> = ({ jobs }) => {
     }
   };
 
-  const handleRecommend = async () => {
-    setIsLoading(true);
+  const handleRecommend = () => {
     setError(null);
     setRecommendation(null);
     try {
-      const result = await getBinRecommendation(jobs, params);
+      const result = getBinRecommendation(jobs, params);
       setRecommendation(result);
     } catch (err) {
       setError('Failed to get recommendation. Please try again.');
       console.error(err);
-    } finally {
-      setIsLoading(false);
     }
   };
 

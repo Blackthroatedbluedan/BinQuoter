@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Job, PredictionParams, ManHourPrediction } from '../types';
-import { getManHourPrediction } from '../services/geminiService';
+import { getManHourPrediction } from '../services/ridgeModel';
 
 interface PredictionProps {
   jobs: Job[];
@@ -32,12 +32,11 @@ const Prediction: React.FC<PredictionProps> = ({ jobs }) => {
     }
   };
 
-  const handlePredict = async () => {
-    setIsLoading(true);
+  const handlePredict = () => {
     setError(null);
     setPrediction(null);
     try {
-      const result = await getManHourPrediction(jobs, params);
+      const result = getManHourPrediction(jobs, params);
       setPrediction(result);
     } catch (err) {
       if (err instanceof Error) {
@@ -46,8 +45,6 @@ const Prediction: React.FC<PredictionProps> = ({ jobs }) => {
         setError('An unknown error occurred. Please try again.');
       }
       console.error(err);
-    } finally {
-      setIsLoading(false);
     }
   };
 
