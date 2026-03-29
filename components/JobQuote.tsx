@@ -164,12 +164,25 @@ const JobQuote: React.FC<JobQuoteProps> = ({ jobs }) => {
             </div>
           </div>
 
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <h3 className="font-semibold text-slate-800 mb-2">Customer Quote</h3>
+            <p className="text-xs text-slate-500 mb-3">{quote.predictedHours.toFixed(0)} man-hrs × $60/hr per person (all-in rate — includes fuel, hotel, equipment)</p>
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-slate-800">Total Quote</span>
+              <span className="text-2xl font-bold text-green-600">{fmtMoney(quote.totalQuote)}</span>
+            </div>
+          </div>
+
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-            <h3 className="font-semibold text-slate-800 mb-3">Customer Quote</h3>
+            <h3 className="font-semibold text-slate-800 mb-3">Job Expenses</h3>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-600">Labor ({quote.predictedHours.toFixed(0)} hrs × $60/hr)</span>
-                <span className="font-medium">{fmtMoney(quote.laborRevenue)}</span>
+                <span className="text-slate-600">Crew wages — build ({params.labourers}×$24 + {params.foremen}×$40)</span>
+                <span className="font-medium">{fmtMoney(quote.internalLabor)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Crew wages — drive time</span>
+                <span className="font-medium">{fmtMoney(quote.internalDriveLabor)}</span>
               </div>
               {quote.needsHotel && (
                 <div className="flex justify-between">
@@ -178,7 +191,7 @@ const JobQuote: React.FC<JobQuoteProps> = ({ jobs }) => {
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-slate-600">Diesel ({quote.totalKm.toFixed(0)} km)</span>
+                <span className="text-slate-600">Diesel ({quote.totalKm.toFixed(0)} km round trip)</span>
                 <span className="font-medium">{fmtMoney(quote.dieselCost)}</span>
               </div>
               {quote.machineCost > 0 && (
@@ -188,46 +201,26 @@ const JobQuote: React.FC<JobQuoteProps> = ({ jobs }) => {
                 </div>
               )}
               <div className="flex justify-between pt-2 border-t border-slate-300">
-                <span className="font-semibold text-slate-800">Total Quote</span>
-                <span className="text-xl font-bold text-green-600">{fmtMoney(quote.totalQuote)}</span>
+                <span className="font-medium text-slate-700">Total expenses</span>
+                <span className="font-medium">{fmtMoney(quote.totalInternalCost)}</span>
               </div>
             </div>
           </div>
 
           <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <h3 className="font-semibold text-slate-800 mb-3">Internal Margin</h3>
+            <h3 className="font-semibold text-slate-800 mb-3">Margin</h3>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-600">Crew wages (build)</span>
-                <span className="font-medium">{fmtMoney(quote.internalLabor)}</span>
+                <span className="text-slate-600">Revenue</span>
+                <span className="font-medium">{fmtMoney(quote.totalQuote)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Crew wages (drive time)</span>
-                <span className="font-medium">{fmtMoney(quote.internalDriveLabor)}</span>
+                <span className="text-slate-600">Expenses</span>
+                <span className="font-medium">−{fmtMoney(quote.totalInternalCost)}</span>
               </div>
-              {quote.needsHotel && (
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Hotel</span>
-                  <span className="font-medium">{fmtMoney(quote.hotelCost)}</span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span className="text-slate-600">Diesel</span>
-                <span className="font-medium">{fmtMoney(quote.dieselCost)}</span>
-              </div>
-              {quote.machineCost > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Machine rental</span>
-                  <span className="font-medium">{fmtMoney(quote.machineCost)}</span>
-                </div>
-              )}
               <div className="flex justify-between pt-2 border-t border-amber-300">
-                <span className="text-slate-600">Total internal cost</span>
-                <span className="font-medium">{fmtMoney(quote.totalInternalCost)}</span>
-              </div>
-              <div className="flex justify-between">
                 <span className="font-semibold text-slate-800">Gross Margin</span>
-                <span className="text-lg font-bold text-amber-700">{fmtMoney(quote.grossMargin)} ({quote.marginPct.toFixed(1)}%)</span>
+                <span className={`text-lg font-bold ${quote.marginPct >= 30 ? 'text-green-600' : quote.marginPct >= 15 ? 'text-amber-600' : 'text-red-600'}`}>{fmtMoney(quote.grossMargin)} ({quote.marginPct.toFixed(1)}%)</span>
               </div>
             </div>
           </div>

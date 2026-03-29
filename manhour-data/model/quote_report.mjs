@@ -212,10 +212,11 @@ function main() {
   const driveLaborCost = totalDriveHours * internalCostPerHour;
 
   // ── Totals ──
-  const totalProjectCost = laborRevenue + hotelCost + dieselCost + machineCost;
-  const totalInternalCost = internalLabor + driveLaborCost + hotelCost + dieselCost + machineCost;
-  const grossMargin = totalProjectCost - totalInternalCost;
-  const marginPct = totalProjectCost > 0 ? (grossMargin / totalProjectCost) * 100 : 0;
+  // $60/hr is the all-in billing rate — hotel, diesel, machine come out of that, not added on top
+  const totalRevenue = laborRevenue;
+  const totalExpenses = internalLabor + driveLaborCost + hotelCost + dieselCost + machineCost;
+  const grossMargin = totalRevenue - totalExpenses;
+  const marginPct = totalRevenue > 0 ? (grossMargin / totalRevenue) * 100 : 0;
 
   // ── Neighbors ──
   const records = loadBinTrainingRecords(args.csv, {
@@ -268,33 +269,32 @@ function main() {
   lines.push(`  Estimated build days: ${pad(buildDays, 8)} days`);
   lines.push("");
 
-  lines.push("  COST BREAKDOWN — CUSTOMER QUOTE");
+  lines.push("  CUSTOMER QUOTE");
   lines.push("  " + rule.slice(2));
-  lines.push(`  Labor (${predicted.toFixed(0)} hrs × ${crewSize} crew × $${args.billingRate}/hr):  ${pad(fmtMoney(laborRevenue), 12)}`);
-  if (needsHotel) {
-    lines.push(`  Hotel (${hotelRooms} rooms × ${hotelNights} nights × $${args.hotelRate}):     ${pad(fmtMoney(hotelCost), 12)}`);
-  }
-  lines.push(`  Diesel (${totalKm.toFixed(0)} km × $${args.dieselRate}/km):             ${pad(fmtMoney(dieselCost), 12)}`);
-  if (args.machine) {
-    lines.push(`  Machine rental (${buildDays} days × $${args.machineRate}):          ${pad(fmtMoney(machineCost), 12)}`);
-  }
-  lines.push("  " + rule.slice(2));
-  lines.push(`  TOTAL QUOTE:                               ${pad(fmtMoney(totalProjectCost), 12)}`);
+  lines.push(`  ${predicted.toFixed(0)} man-hrs × $${args.billingRate}/hr per person`);
+  lines.push(`  (all-in rate — includes fuel, hotel, equipment)`);
+  lines.push("");
+  lines.push(`  TOTAL QUOTE:                               ${pad(fmtMoney(totalRevenue), 12)}`);
   lines.push("");
 
-  lines.push("  INTERNAL COST / MARGIN");
+  lines.push("  JOB EXPENSES (internal)");
   lines.push("  " + rule.slice(2));
   lines.push(`  Crew wages (build):  ${pad(fmtMoney(internalLabor), 12)}`);
   lines.push(`  Crew wages (drive):  ${pad(fmtMoney(driveLaborCost), 12)}`);
   if (needsHotel) {
-    lines.push(`  Hotel:               ${pad(fmtMoney(hotelCost), 12)}`);
+    lines.push(`  Hotel (${hotelRooms} rooms × ${hotelNights} nights × $${args.hotelRate}):  ${pad(fmtMoney(hotelCost), 12)}`);
   }
-  lines.push(`  Diesel:              ${pad(fmtMoney(dieselCost), 12)}`);
+  lines.push(`  Diesel (${totalKm.toFixed(0)} km × $${args.dieselRate}/km):    ${pad(fmtMoney(dieselCost), 12)}`);
   if (args.machine) {
-    lines.push(`  Machine rental:      ${pad(fmtMoney(machineCost), 12)}`);
+    lines.push(`  Machine rental (${buildDays} days × $${args.machineRate}):  ${pad(fmtMoney(machineCost), 12)}`);
   }
   lines.push("  " + rule.slice(2));
-  lines.push(`  Total internal cost: ${pad(fmtMoney(totalInternalCost), 12)}`);
+  lines.push(`  Total expenses:      ${pad(fmtMoney(totalExpenses), 12)}`);
+  lines.push("");
+  lines.push("  MARGIN");
+  lines.push("  " + rule.slice(2));
+  lines.push(`  Revenue:             ${pad(fmtMoney(totalRevenue), 12)}`);
+  lines.push(`  Expenses:            ${pad(fmtMoney(totalExpenses), 12)}`);
   lines.push(`  Gross margin:        ${pad(fmtMoney(grossMargin), 12)}  (${marginPct.toFixed(1)}%)`);
   lines.push("");
 

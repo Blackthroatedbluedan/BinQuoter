@@ -199,7 +199,8 @@ export function getJobQuote(jobs: Job[], params: QuoteParams): QuoteResult {
   const totalDriveHours = driveTrips * params.driveHours;
   const internalDriveLabor = totalDriveHours * internalCostPerHour;
 
-  const totalQuote = laborRevenue + hotelCost + dieselCost + machineCost;
+  // $60/hr is the all-in billing rate — hotel, diesel, machine come out of that, not added on top
+  const totalQuote = laborRevenue;
   const totalInternalCost = internalLabor + internalDriveLabor + hotelCost + dieselCost + machineCost;
   const grossMargin = totalQuote - totalInternalCost;
   const marginPct = totalQuote > 0 ? (grossMargin / totalQuote) * 100 : 0;
