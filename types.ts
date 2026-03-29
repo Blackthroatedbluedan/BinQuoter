@@ -54,3 +54,40 @@ export interface ManHourPrediction {
     predictedHours: number;
     reasoning: string;
 }
+
+export interface QuoteParams {
+    diameter: number;
+    rings: number;
+    labourers: number;
+    foremen: number;
+    driveHours: number;
+    sidedraw: boolean;
+    stirator: boolean;
+    topDry: boolean;
+    daySweep: boolean;
+    hopperBin: boolean;
+    machineRental: boolean;
+    manufacturer: string;
+}
+
+export interface QuoteResult {
+    predictedHours: number;
+    buildDays: number;
+    bushelsK: number;
+    laborRevenue: number;
+    hotelCost: number;
+    dieselCost: number;
+    machineCost: number;
+    totalQuote: number;
+    internalLabor: number;
+    internalDriveLabor: number;
+    totalInternalCost: number;
+    grossMargin: number;
+    marginPct: number;
+    needsHotel: boolean;
+    hotelRooms: number;
+    hotelNights: number;
+    totalKm: number;
+    crewSize: number;
+    reasoning: string;
+}

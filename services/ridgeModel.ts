@@ -6,7 +6,7 @@
 
 import modelData from '../manhour-data/artifacts/model.json';
 import { JOBS } from '../data';
-import { Job, PredictionParams, ManHourPrediction, RecommendationParams, BinRecommendation } from '../types';
+import { Job, PredictionParams, ManHourPrediction, RecommendationParams, BinRecommendation, QuoteParams, QuoteResult } from '../types';
 
 // ── Bushels formula (matches lib/bushelsCornByManufacturer.js) ──
 
@@ -148,6 +148,90 @@ export function getManHourPrediction(jobs: Job[], params: PredictionParams): Man
     reasoning: `Ridge model v3 prediction based on ${(modelData as { trainingRows: number }).trainingRows} historical builds. `
       + `Nearest comparables: ${comparables}. `
       + `Neighbor average: ${neighborAvg.toFixed(0)} hrs.`,
+  };
+}
+
+// ── Cost constants ──
+const BILLING_RATE = 60;
+const LABOURER_WAGE = 24;
+const FOREMAN_WAGE = 40;
+const HOTEL_RATE = 160;
+const HOTEL_PPL_PER_ROOM = 2;
+const HOTEL_DRIVE_THRESHOLD = 1.5;
+const DIESEL_RATE_PER_KM = 0.55;
+const AVG_SPEED_KMH = 80;
+const MACHINE_RENTAL_PER_DAY = 250;
+const WORK_HOURS_PER_DAY = 10;
+
+export function getJobQuote(jobs: Job[], params: QuoteParams): QuoteResult {
+  const allJobs = jobs.length > 0 ? jobs : JOBS;
+  const crewSize = params.labourers + params.foremen;
+  const bushelsK = bushelsCornThousands(params.diameter, params.rings, params.manufacturer);
+
+  const features = buildFeatureVector(
+    params.diameter, params.rings, bushelsK,
+    crewSize, params.driveHours,
+    params.sidedraw, params.stirator, params.topDry, params.daySweep, params.hopperBin,
+    params.manufacturer,
+  );
+  const predicted = dotProduct(beta, features);
+  const buildDays = Math.ceil(predicted / (crewSize * WORK_HOURS_PER_DAY));
+
+  const laborRevenue = predicted * BILLING_RATE;
+
+  const internalCostPerHour = (params.labourers * LABOURER_WAGE) + (params.foremen * FOREMAN_WAGE);
+  const internalLabor = (predicted / crewSize) * internalCostPerHour;
+
+  const needsHotel = params.driveHours > HOTEL_DRIVE_THRESHOLD;
+  const hotelRooms = needsHotel ? Math.ceil(crewSize / HOTEL_PPL_PER_ROOM) : 0;
+  const hotelNights = needsHotel ? Math.max(0, buildDays - 1) : 0;
+  const hotelCost = hotelRooms * hotelNights * HOTEL_RATE;
+
+  const oneWayKm = params.driveHours * AVG_SPEED_KMH;
+  const roundTripKm = oneWayKm * 2;
+  const dieselTrips = needsHotel ? 1 : buildDays;
+  const totalKm = roundTripKm * dieselTrips;
+  const dieselCost = totalKm * DIESEL_RATE_PER_KM;
+
+  const machineCost = params.machineRental ? buildDays * MACHINE_RENTAL_PER_DAY : 0;
+
+  const driveTrips = needsHotel ? 2 : buildDays * 2;
+  const totalDriveHours = driveTrips * params.driveHours;
+  const internalDriveLabor = totalDriveHours * internalCostPerHour;
+
+  const totalQuote = laborRevenue + hotelCost + dieselCost + machineCost;
+  const totalInternalCost = internalLabor + internalDriveLabor + hotelCost + dieselCost + machineCost;
+  const grossMargin = totalQuote - totalInternalCost;
+  const marginPct = totalQuote > 0 ? (grossMargin / totalQuote) * 100 : 0;
+
+  const nearest = findNearestJobs(
+    { diameter: params.diameter, rings: params.rings, sidedraw: params.sidedraw, stirator: params.stirator, topDry: params.topDry, daySweep: params.daySweep, hopperBin: params.hopperBin, manufacturer: params.manufacturer },
+    allJobs, 3,
+  );
+  const comparables = nearest.map(n =>
+    `${n.job.customer}: ${n.job.diameter}×${n.job.rings} = ${n.job.manHours.toFixed(0)} hrs`
+  ).join("; ");
+
+  return {
+    predictedHours: Math.round(predicted * 10) / 10,
+    buildDays,
+    bushelsK,
+    laborRevenue,
+    hotelCost,
+    dieselCost,
+    machineCost,
+    totalQuote,
+    internalLabor,
+    internalDriveLabor: internalDriveLabor,
+    totalInternalCost,
+    grossMargin,
+    marginPct,
+    needsHotel,
+    hotelRooms,
+    hotelNights,
+    totalKm,
+    crewSize,
+    reasoning: `Comparables: ${comparables}.`,
   };
 }
 

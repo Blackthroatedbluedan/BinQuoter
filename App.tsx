@@ -7,6 +7,7 @@ import Prediction from './components/Prediction';
 import BushelEstimator from './components/BushelEstimator';
 import JobForm from './components/JobForm';
 import CsvImporter from './components/CsvImporter';
+import JobQuote from './components/JobQuote';
 import { db } from './firebaseConfig';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, query, writeBatch, orderBy } from 'firebase/firestore';
 
@@ -120,6 +121,7 @@ function App() {
               <BushelEstimator jobs={jobs} />
               <Prediction jobs={jobs} />
             </div>
+            <JobQuote jobs={jobs} />
             <JobChart jobs={jobs} />
             
             {jobs.length === 0 ? (
