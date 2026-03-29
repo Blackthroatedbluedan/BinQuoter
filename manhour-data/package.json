@@ -8,6 +8,7 @@
     "train": "node model/train_model.mjs",
     "predict": "node model/predict_bin.mjs",
     "submit": "node model/submit_job.mjs",
+    "quote": "node model/quote_report.mjs",
     "eval": "node model/eval_model.mjs",
     "eval-future": "node model/eval_future_jobs.mjs",
     "schedule": "node model/predict_schedule.mjs",
